@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="#"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" exclude-result-prefixes="msxsl">
+  <xsl:output method="xml" omit-xml-declaration="no" indent="no" encoding="UTF-8"/>
+  
+  <xsl:template match="/">
+    <xsl:variable name="level0">
+      <xsl:apply-templates mode="initial" select="node()"/>
+    </xsl:variable>
+    <xsl:variable name="level1">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level0)/node()"/>
+    </xsl:variable>
+    <xsl:variable name="level2">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level1)/node()"/>
+    </xsl:variable>
+    <xsl:variable name="level3">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level2)/node()"/>
+    </xsl:variable>
+    <xsl:variable name="level4">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level3)/node()"/>
+    </xsl:variable>
+    <xsl:variable name="level5">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level4)/node()"/>
+    </xsl:variable>
+    <xsl:variable name="level6">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level5)/node()"/>
+    </xsl:variable>
+    <xsl:variable name="level7">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level6)/node()"/>
+    </xsl:variable>
+    <xsl:variable name="level8">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level7)/node()"/>
+    </xsl:variable>
+    <xsl:variable name="level9">
+      <xsl:apply-templates mode="normal" select="msxsl:node-set($level8)/node()"/>
+    </xsl:variable>
+    <!--
+      <xsl:apply-templates mode="testout" select="msxsl:node-set($level4)/node()"/>
+    -->
+    <xsl:apply-templates mode="project" select="msxsl:node-set($level9)/node()"/>
+  </xsl:template>
+  
+  <xsl:template match="xsl:stylesheet" mode="initial">
+    <w v="0">
+      <r d="1"/>
+      <r d="2"/>
+      <r d="3"/>
+      <r d="4"/>
+      <r d="5"/>
+      <r d="6"/>
+      <r d="7"/>
+      <r d="8"/>
+      <r d="9"/>
+    </w>
+  </xsl:template>
+
+  <xsl:template match="w" mode="normal">
+    <xsl:for-each select="r">
+      <xsl:if test="((../@v*10+@d) mod (string-length(../@v)+1))=0 or ../@v=0">
+        <w v="{../@v*10+@d}">
+          <xsl:variable name="dx" select="@d"/>
+          <xsl:for-each select="../r">
+            <xsl:if test="@d!=$dx">
+              <r d="{@d}"/>
+            </xsl:if>
+          </xsl:for-each>
+        </w>
+      </xsl:if>
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template match="w" mode="project">
+    <b><xsl:value-of select="@v"/></b><br/>
+  </xsl:template>
+
+  <xsl:template match="w" mode="testout">
+    <xsl:value-of select="@v"/>: <xsl:apply-templates mode="testout"/><br/> 
+  </xsl:template>
+  <xsl:template match="r" mode="testout">
+    <xsl:value-of select="@d"/>,
+  </xsl:template>
+</xsl:stylesheet>
